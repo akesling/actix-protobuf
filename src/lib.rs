@@ -9,7 +9,6 @@ extern crate http;
 
 extern crate prost;
 #[cfg(test)]
-#[macro_use]
 extern crate prost_derive;
 
 use derive_more::Display;
