@@ -236,7 +236,8 @@ impl<T: Message + Default + 'static> Future for ProtoBufMessage<T> {
                     body.extend_from_slice(&chunk);
                     Ok(body)
                 }
-            }).and_then(|body| Ok(<T>::decode(&mut body.into_buf())?));
+            })
+            .and_then(|body| Ok(<T>::decode(&mut body.into_buf())?));
         self.fut = Some(Box::new(fut));
         self.poll()
     }
@@ -312,7 +313,8 @@ mod tests {
             .header(
                 header::CONTENT_TYPE,
                 header::HeaderValue::from_static("application/text"),
-            ).to_http_parts();
+            )
+            .to_http_parts();
         let protobuf = block_on(ProtoBufMessage::<MyObject>::new(&req, &mut pl));
         assert_eq!(protobuf.err().unwrap(), ProtoBufPayloadError::ContentType);
 
@@ -320,10 +322,12 @@ mod tests {
             .header(
                 header::CONTENT_TYPE,
                 header::HeaderValue::from_static("application/protobuf"),
-            ).header(
+            )
+            .header(
                 header::CONTENT_LENGTH,
                 header::HeaderValue::from_static("10000"),
-            ).to_http_parts();
+            )
+            .to_http_parts();
         let protobuf =
             block_on(ProtoBufMessage::<MyObject>::new(&req, &mut pl).limit(100));
         assert_eq!(protobuf.err().unwrap(), ProtoBufPayloadError::Overflow);
